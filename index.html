@@ -83,7 +83,7 @@
 </div>
 
 <div class="info">
-  ⏱ Time Selected: <span id="selTime">5</span>s |
+  ⏱ Time Selected: <span id="selTime">5</span> seconds |
   Time Left: <span id="timeLeft">--</span>s
 </div>
 
@@ -112,6 +112,13 @@ let right = 0;
 
 const leftZone = document.getElementById("leftZone");
 const rightZone = document.getElementById("rightZone");
+const selTime = document.getElementById("selTime");
+const timeLeftElem = document.getElementById("timeLeft");
+
+const leftCount = document.getElementById("leftCount");
+const rightCount = document.getElementById("rightCount");
+const leftCPS = document.getElementById("leftCPS");
+const rightCPS = document.getElementById("rightCPS");
 
 function setTime(t) {
   if (running) return;
@@ -121,7 +128,7 @@ function setTime(t) {
 
 function setCustom() {
   if (running) return;
-  const v = Number(customTime.value);
+  const v = Number(document.getElementById("customTime").value);
   if (v >= 1) {
     duration = v;
     selTime.textContent = v;
@@ -135,21 +142,28 @@ function startTest() {
   right = 0;
   updateUI();
   updateCPS();
-  timeLeftSpan();
-  timer = setInterval(tick, 1000);
-}
+  timeLeftElem.textContent = timeLeft;
 
-function tick() {
-  timeLeft--;
-  timeLeftSpan();
-  updateCPS();
-  if (timeLeft <= 0) endTest();
+  timer = setInterval(() => {
+    timeLeft--;
+    timeLeftElem.textContent = timeLeft;
+    updateCPS();
+    if (timeLeft <= 0) endTest();
+  }, 1000);
 }
 
 function endTest() {
   clearInterval(timer);
   running = false;
-  alert("Your CPS: " + ((left + right) / duration).toFixed(2));
+
+  const leftCps = (left / duration).toFixed(2);
+  const rightCps = (right / duration).toFixed(2);
+
+  alert(
+    "Test Finished!\n\n" +
+    "Your LEFT click CPS is: " + leftCps + "\n" +
+    "Your RIGHT click CPS is: " + rightCps
+  );
 }
 
 function resetTest() {
@@ -158,7 +172,7 @@ function resetTest() {
   left = 0;
   right = 0;
   timeLeft = 0;
-  timeLeftSpan();
+  timeLeftElem.textContent = "--";
   updateUI();
   updateCPS();
 }
@@ -174,25 +188,11 @@ function updateCPS() {
   rightCPS.textContent = elapsed > 0 ? (right / elapsed).toFixed(2) + " CPS" : "0 CPS";
 }
 
-function timeLeftSpan() {
-  timeLeftElem.textContent = timeLeft > 0 ? timeLeft : "--";
-}
-
-const selTime = document.getElementById("selTime");
-const customTime = document.getElementById("customTime");
-const timeLeftElem = document.getElementById("timeLeft");
-const leftCount = document.getElementById("leftCount");
-const rightCount = document.getElementById("rightCount");
-const leftCPS = document.getElementById("leftCPS");
-const rightCPS = document.getElementById("rightCPS");
-
-/* 🔒 HARD LOCK USING e.buttons (FINAL FIX) */
-
+/* FINAL CLICK LOCK — NO CROSS CLICK POSSIBLE */
 leftZone.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "mouse") return;
   if (e.buttons !== 1) return; // ONLY LEFT BUTTON
   e.preventDefault();
-  e.stopPropagation();
   if (!running) startTest();
   left++;
   updateUI();
@@ -202,13 +202,12 @@ rightZone.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "mouse") return;
   if (e.buttons !== 2) return; // ONLY RIGHT BUTTON
   e.preventDefault();
-  e.stopPropagation();
   if (!running) startTest();
   right++;
   updateUI();
 });
 
-/* BLOCK CONTEXT MENU ONLY IN ZONES */
+/* BLOCK CONTEXT MENU INSIDE ZONES */
 [leftZone, rightZone].forEach(zone => {
   zone.addEventListener("contextmenu", e => e.preventDefault());
 });
