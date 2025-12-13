@@ -249,17 +249,23 @@ let firstClickStarted = false;('click', ()=>{ if (!running) startTest(); else fi
     });
 
     // Mouse buttons mode: count mouse button events anywhere
+    // Mouse buttons mode: count mouse button events anywhere (FIXED)
     document.addEventListener('mousedown', (e)=>{
       if (!modeMouseButtons()) return;
+      // prevent default for BOTH buttons so browser menu never appears
+      e.preventDefault();
       // 0 = left, 2 = right
       if (e.button === 0) { clickLeft(); }
+      if (e.button === 2) { clickRight(); }
+    }); }
       if (e.button === 2) { e.preventDefault(); clickRight(); }
     });
     // prevent context menu when using right-click counting
-    // Prevent right-click menu during test (fix for right CPS)
+    // HARD BLOCK right-click menu everywhere (FINAL FIX)
     document.addEventListener('contextmenu', (e)=>{
-      if (running || modeMouseButtons()) {
-        e.preventDefault();
+      e.preventDefault();
+      return false;
+    });
         return false;
       }
     });
