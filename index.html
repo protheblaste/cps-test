@@ -1,355 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CPS Test — Left / Right with presets + custom time</title>
-  <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --accent:#0ea5e9; --muted:#94a3b8; --glass: rgba(255,255,255,0.03);
-      --success:#10b981;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%, #081026 100%);color:#e6eef8}
-    .wrap{max-width:980px;margin:28px auto;padding:20px}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    h1{font-size:20px;margin:0}
-    .controls{display:flex;gap:12px;flex-wrap:wrap}
+  <meta charset="UTF-8">
+  <title>CPS Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
-    .presets{display:flex;gap:8px;flex-wrap:wrap}
-    button,p,select,input{font-size:14px}
-    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:inherit;cursor:pointer}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#021025;font-weight:600}
-    .big{font-size:28px;font-weight:700}
-    .zones{display:flex;gap:8px;height:220px}
-    .zone{flex:1;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03)}
-    .zone.left{border-right:2px dashed rgba(255,255,255,0.03)}
-    .small{font-size:12px;color:var(--muted)}
-    .footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .stats{display:flex;flex-direction:column;gap:8px}
-    .row{display:flex;gap:8px;align-items:center}
-    .history{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-height:180px;overflow:auto}
-    .history-item{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:13px}
-    label{font-size:13px}
-    input[type=number]{width:100px;padding:6px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:inherit}
-    .toggle{display:inline-flex;align-items:center;gap:8px}
-    .note{color:var(--muted);font-size:13px}
-    footer.small{margin-top:18px;color:var(--muted);font-size:13px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr;}.zones{height:180px}}
+  <style>
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+    }
+
+    h1 { margin-top: 20px; }
+
+    .controls {
+      margin: 15px 0;
+    }
+
+    button, input {
+      padding: 8px 12px;
+      margin: 4px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button {
+      background: #38bdf8;
+      color: #020617;
+      font-weight: bold;
+    }
+
+    input {
+      width: 80px;
+    }
+
+    .zones {
+      display: flex;
+      height: 260px;
+      margin: 20px;
+      gap: 10px;
+    }
+
+    .zone {
+      flex: 1;
+      border-radius: 14px;
+      background: #020617;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .zone h2 { margin: 0; }
+
+    .count {
+      font-size: 36px;
+      margin: 10px 0;
+    }
+
+    .cps {
+      color: #94a3b8;
+    }
+
+    .info {
+      margin-top: 10px;
+      color: #94a3b8;
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <h1>CPS Test — Left / Right (Zones & Mouse buttons)</h1>
-      <div class="note">Click/tap the left or right zone (or use mouse buttons mode). Presets + custom time included.</div>
-    </header>
 
-    <div class="grid">
-      <div class="card">
-        <div class="controls row" style="justify-content:space-between;align-items:center">
-          <div>
-            <div class="presets small" style="margin-bottom:8px">
-              <label>Select duration:</label>
-              <button class="btn" data-time="1">1s</button>
-              <button class="btn" data-time="5">5s</button>
-              <button class="btn" data-time="10">10s</button>
-              <button class="btn" data-time="30">30s</button>
-              <button class="btn" data-time="60">60s</button>
-              <input id="customTime" type="number" min="1" placeholder="Custom (s)" style="width:120px">
-              <button id="setCustom" class="btn">Set</button>
-            </div>
-          </div>
+<h1>CPS Test (Left / Right)</h1>
 
-          <div>
-            <label class="toggle"><input id="modeToggle" type="checkbox"> Use Mouse Buttons (instead of zones)</label>
-          </div>
-        </div>
+<div class="controls">
+  <button onclick="setTime(1)">1s</button>
+  <button onclick="setTime(5)">5s</button>
+  <button onclick="setTime(10)">10s</button>
+  <button onclick="setTime(30)">30s</button>
+  <button onclick="setTime(60)">60s</button>
+  <input type="number" id="customTime" placeholder="sec">
+  <button onclick="setCustom()">Set</button>
+</div>
 
-        <div class="zones" id="zones">
-          <div class="zone left" id="leftZone">
-            <div class="small">Left CPS</div>
-            <div class="big" id="leftCount">0</div>
-            <div class="small" id="leftCPS">0 CPS</div>
-            <div class="note">Click/tap here for LEFT CPS</div>
-          </div>
+<div class="info">
+  Time Selected: <span id="selTime">5</span>s |
+  Time Left: <span id="timeLeft">--</span>s
+</div>
 
-          <div class="zone right" id="rightZone">
-            <div class="small">Right CPS</div>
-            <div class="big" id="rightCount">0</div>
-            <div class="small" id="rightCPS">0 CPS</div>
-            <div class="note">Click/tap here for RIGHT CPS</div>
-          </div>
-        </div>
-
-        <div class="footer">
-          <div class="row">
-            <button id="startBtn" class="btn primary">Start Test</button>
-            <button id="resetBtn" class="btn">Reset</button>
-            <div class="small" style="margin-left:8px">Time left: <span id="timeLeft">--</span>s</div>
-          </div>
-
-          <div class="stats">
-            <div class="row"><div class="small">Active Mode:</div><div id="activeMode" class="small">Zones</div></div>
-            <div class="row"><div class="small">Selected Duration:</div><div id="selDuration" class="small">5s</div></div>
-          </div>
-        </div>
-
-        <div class="history" id="history"></div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div>
-            <div class="small">Best scores (saved locally)</div>
-            <div id="bestList" class="history"></div>
-          </div>
-
-          <div>
-            <div class="small">Tips</div>
-            <ul class="small">
-              <li>Use the mouse buttons mode if you want to test physical left/right mouse clicks.</li>
-              <li>On mobile, use zones — left or right side of the screen.</li>
-              <li>Press <strong>Space</strong> to start/pause when focused on the page.</li>
-            </ul>
-          </div>
-
-          <div>
-            <div class="small">Export / Clear</div>
-            <div class="row">
-              <button id="exportBtn" class="btn">Export Results (JSON)</button>
-              <button id="clearBtn" class="btn">Clear Bests</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <footer class="small">Built for testing left/right CPS with presets and custom times. Saved bests use browser localStorage.</footer>
+<div class="zones">
+  <div class="zone" id="leftZone">
+    <h2>LEFT</h2>
+    <div class="count" id="leftCount">0</div>
+    <div class="cps" id="leftCPS">0 CPS</div>
   </div>
 
-  <script>
-    // --- basic state ---
-    const leftZone = document.getElementById('leftZone');
-    const rightZone = document.getElementById('rightZone');
-    const leftCountEl = document.getElementById('leftCount');
-    const rightCountEl = document.getElementById('rightCount');
-    const leftCPSEl = document.getElementById('leftCPS');
-    const rightCPSEl = document.getElementById('rightCPS');
-    const timeLeftEl = document.getElementById('timeLeft');
-    const startBtn = document.getElementById('startBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const historyEl = document.getElementById('history');
-    const bestList = document.getElementById('bestList');
-    const selDurationEl = document.getElementById('selDuration');
-    const activeModeEl = document.getElementById('activeMode');
+  <div class="zone" id="rightZone">
+    <h2>RIGHT</h2>
+    <div class="count" id="rightCount">0</div>
+    <div class="cps" id="rightCPS">0 CPS</div>
+  </div>
+</div>
 
-    const modeToggle = document.getElementById('modeToggle');
-    const modeMouseButtons = () => modeToggle.checked;
+<script>
+  let duration = 5;
+  let timeLeft = 0;
+  let running = false;
+  let timer = null;
 
-    let duration = 5; // seconds
-    selDurationEl.textContent = duration + 's';
-    timeLeftEl.textContent = '--';
+  let left = 0;
+  let right = 0;
 
-    let timer = null;
-    let timeLeft = 0;
-    let running = false;
+  const leftZone = document.getElementById("leftZone");
+  const rightZone = document.getElementById("rightZone");
 
-    // counts
-    let leftCount = 0;
-    let rightCount = 0;
+  function setTime(t) {
+    duration = t;
+    document.getElementById("selTime").textContent = t;
+  }
 
-    // setup presets buttons
-    document.querySelectorAll('[data-time]').forEach(b=>{
-      b.addEventListener('click', ()=>{
-        duration = Number(b.dataset.time);
-        selDurationEl.textContent = duration + 's';
-      });
-    });
-    document.getElementById('setCustom').addEventListener('click', ()=>{
-      const v = Number(document.getElementById('customTime').value);
-      if (v && v >= 1){ duration = Math.floor(v); selDurationEl.textContent = duration + 's'; }
-    });
-
-    // Start / Reset
-    // Disable manual start
-// startBtn.addEventListener('click', ()=>{ if (!running) startTest(); else finishTest(); });
-
-// Start when first click occurs inside a zone (zones mode only)
-let firstClickStarted = false;('click', ()=>{ if (!running) startTest(); else finishTest(); });
-    resetBtn.addEventListener('click', resetAll);
-
-    function startTest(){
-      resetCounts();
-      running = true;
-      timeLeft = duration;
-      startBtn.textContent = 'End Test';
-      timeLeftEl.textContent = timeLeft;
-      timer = setInterval(()=>{
-        timeLeft -= 1;
-        timeLeftEl.textContent = timeLeft;
-        updateCPS();
-        if (timeLeft <= 0) finishTest();
-      }, 1000);
+  function setCustom() {
+    const v = Number(document.getElementById("customTime").value);
+    if (v > 0) {
+      duration = v;
+      document.getElementById("selTime").textContent = v;
     }
+  }
 
-    function finishTest(){
-      if (!running) return;
-      running = false;
-      clearInterval(timer);
-      startBtn.textContent = 'Start Test';
-      timeLeftEl.textContent = '0';
+  function startTest() {
+    running = true;
+    timeLeft = duration;
+    left = 0;
+    right = 0;
+    updateUI();
+
+    document.getElementById("timeLeft").textContent = timeLeft;
+
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timeLeft").textContent = timeLeft;
       updateCPS();
-      const finalLeftCPS = (leftCount / duration).toFixed(2);
-      const finalRightCPS = (rightCount / duration).toFixed(2);
-      const finalTotalCPS = ((leftCount + rightCount) / duration).toFixed(2);
-      alert(`Your CPS: ${finalTotalCPS}`);
-      saveResult();
+
+      if (timeLeft <= 0) endTest();
+    }, 1000);
+  }
+
+  function endTest() {
+    clearInterval(timer);
+    running = false;
+    updateCPS();
+    alert(
+      "Your CPS: " + ((left + right) / duration).toFixed(2)
+    );
+  }
+
+  function updateUI() {
+    document.getElementById("leftCount").textContent = left;
+    document.getElementById("rightCount").textContent = right;
+  }
+
+  function updateCPS() {
+    const elapsed = duration - timeLeft;
+    document.getElementById("leftCPS").textContent =
+      elapsed > 0 ? (left / elapsed).toFixed(2) + " CPS" : "0 CPS";
+    document.getElementById("rightCPS").textContent =
+      elapsed > 0 ? (right / elapsed).toFixed(2) + " CPS" : "0 CPS";
+  }
+
+  leftZone.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    if (!running) startTest();
+    if (running) {
+      left++;
+      updateUI();
     }
+  });
 
-    function resetAll(){
-      running = false;
-      clearInterval(timer);
-      resetCounts();
-      historyEl.innerHTML = '';
-      timeLeftEl.textContent = '--';
-      startBtn.textContent = 'Start Test';
+  rightZone.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    if (!running) startTest();
+    if (running) {
+      right++;
+      updateUI();
     }
+  });
 
-    function resetCounts(){ leftCount = 0; rightCount = 0; leftCountEl.textContent='0'; rightCountEl.textContent='0'; leftCPSEl.textContent='0 CPS'; rightCPSEl.textContent='0 CPS'; }
+  // 🔥 FULL RIGHT-CLICK BLOCK (FINAL FIX)
+  document.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+  });
 
-    function updateCPS(){
-      const elapsed = duration - (timeLeft > 0 ? timeLeft : 0);
-      const leftCPS = elapsed > 0 ? (leftCount/elapsed).toFixed(2) : (running ? (leftCount/(1e-9)).toFixed(2) : '0.00');
-      const rightCPS = elapsed > 0 ? (rightCount/elapsed).toFixed(2) : (running ? (rightCount/(1e-9)).toFixed(2) : '0.00');
-      leftCPSEl.textContent = leftCPS + ' CPS';
-      rightCPSEl.textContent = rightCPS + ' CPS';
-    }
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    return false;
+  });
+</script>
 
-    // Click handling depending on mode
-    function clickLeft(){ if (!running) return; leftCount++; leftCountEl.textContent = leftCount; }
-    function clickRight(){ if (!running) return; rightCount++; rightCountEl.textContent = rightCount; }
-
-    // Zones mode: count clicks/taps inside left/right boxes
-    leftZone.addEventListener('pointerdown', (e)=>{
-      if (modeMouseButtons()) return;
-      e.preventDefault();
-      if (!running) startTest();
-      clickLeft();
-    });
-    rightZone.addEventListener('pointerdown', (e)=>{
-      if (modeMouseButtons()) return;
-      e.preventDefault();
-      if (!running) startTest();
-      clickRight();
-    });
-
-    // Mouse buttons mode: count mouse button events anywhere
-    // Mouse buttons mode: count mouse button events anywhere (FIXED)
-    document.addEventListener('mousedown', (e)=>{
-      if (!modeMouseButtons()) return;
-      // prevent default for BOTH buttons so browser menu never appears
-      e.preventDefault();
-      // 0 = left, 2 = right
-      if (e.button === 0) { clickLeft(); }
-      if (e.button === 2) { clickRight(); }
-    }); }
-      if (e.button === 2) { e.preventDefault(); clickRight(); }
-    });
-    // prevent context menu when using right-click counting
-    // HARD BLOCK right-click menu everywhere (FINAL FIX)
-    document.addEventListener('contextmenu', (e)=>{
-      e.preventDefault();
-      return false;
-    });
-        return false;
-      }
-    });
-    });
-
-    // keyboard shortcuts (z for left, m for right, space start/end)
-    document.addEventListener('keydown', (e)=>{
-      if (e.code === 'Space'){ e.preventDefault(); if (!running) startTest(); else finishTest(); }
-      if (e.key.toLowerCase() === 'z') clickLeft();
-      if (e.key.toLowerCase() === 'm') clickRight();
-    });
-
-    // mode change
-    modeToggle.addEventListener('change', ()=>{
-      activeModeEl.textContent = modeMouseButtons() ? 'Mouse Buttons' : 'Zones';
-    });
-
-    // Save + history
-    function saveResult(){
-      const leftCPS = (leftCount / duration).toFixed(2);
-      const rightCPS = (rightCount / duration).toFixed(2);
-      const entry = { time: new Date().toISOString(), duration, left: leftCount, right: rightCount, leftCPS, rightCPS, mode: modeMouseButtons() ? 'mouse' : 'zones' };
-      const arr = JSON.parse(localStorage.getItem('cps_history')||'[]');
-      arr.unshift(entry);
-      localStorage.setItem('cps_history', JSON.stringify(arr.slice(0,200)));
-      appendHistory(entry);
-      updateBests(entry);
-      renderBests();
-    }
-
-    function appendHistory(entry){
-      const d = document.createElement('div'); d.className='history-item';
-      d.textContent = `${new Date(entry.time).toLocaleString()} — ${entry.duration}s — LEFT: ${entry.left} (${entry.leftCPS} CPS) • RIGHT: ${entry.right} (${entry.rightCPS} CPS) — ${entry.mode}`;
-      historyEl.prepend(d);
-    }
-
-    function loadHistory(){
-      const arr = JSON.parse(localStorage.getItem('cps_history')||'[]');
-      historyEl.innerHTML='';
-      arr.slice(0,50).forEach(a=>appendHistory(a));
-    }
-
-    function updateBests(entry){
-      const key = 'cps_bests';
-      const bests = JSON.parse(localStorage.getItem(key)||'{}');
-      // store best left and right by (mode + duration)
-      const id = (entry.mode) + '_' + entry.duration;
-      if (!bests[id]) bests[id] = {left:0,right:0};
-      if (entry.left > bests[id].left) bests[id].left = entry.left;
-      if (entry.right > bests[id].right) bests[id].right = entry.right;
-      localStorage.setItem(key, JSON.stringify(bests));
-    }
-
-    function renderBests(){
-      const bests = JSON.parse(localStorage.getItem('cps_bests')||'{}');
-      bestList.innerHTML='';
-      const keys = Object.keys(bests).sort((a,b)=>a.localeCompare(b));
-      if (keys.length===0){ bestList.innerHTML='<div class="history-item">No best scores yet — take a test!</div>'; return; }
-      keys.forEach(k=>{
-        const [mode,dur] = k.split('_');
-        const val = bests[k];
-        const el = document.createElement('div'); el.className='history-item';
-        el.textContent = `${mode.toUpperCase()} • ${dur}s — LEFT best: ${val.left} • RIGHT best: ${val.right}`;
-        bestList.appendChild(el);
-      });
-    }
-
-    // export / clear
-    document.getElementById('exportBtn').addEventListener('click', ()=>{
-      const data = { history: JSON.parse(localStorage.getItem('cps_history')||'[]'), bests: JSON.parse(localStorage.getItem('cps_bests')||'{}') };
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download = 'cps-results.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-    document.getElementById('clearBtn').addEventListener('click', ()=>{ localStorage.removeItem('cps_bests'); renderBests(); });
-
-    // init
-    renderBests(); loadHistory();
-
-    // small UI improvements: show last 5 results on load
-    (function showLastOnLoad(){
-      const arr = JSON.parse(localStorage.getItem('cps_history')||'[]');
-      arr.slice(0,5).forEach(a=>appendHistory(a));
-    })();
-  </script>
 </body>
 </html>
