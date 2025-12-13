@@ -256,8 +256,13 @@ let firstClickStarted = false;('click', ()=>{ if (!running) startTest(); else fi
       if (e.button === 2) { e.preventDefault(); clickRight(); }
     });
     // prevent context menu when using right-click counting
+    // Prevent right-click menu during test (fix for right CPS)
     document.addEventListener('contextmenu', (e)=>{
-      if (modeMouseButtons()) e.preventDefault();
+      if (running || modeMouseButtons()) {
+        e.preventDefault();
+        return false;
+      }
+    });
     });
 
     // keyboard shortcuts (z for left, m for right, space start/end)
