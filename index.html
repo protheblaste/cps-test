@@ -14,7 +14,9 @@
     text-align: center;
   }
 
-  h1 { margin-top: 20px; }
+  h1 {
+    margin-top: 20px;
+  }
 
   .controls {
     margin: 15px 0;
@@ -40,7 +42,7 @@
   }
 
   input {
-    width: 110px;
+    width: 130px;
   }
 
   .info {
@@ -65,8 +67,13 @@
     user-select: none;
   }
 
-  .count { font-size: 36px; }
-  .cps { color: #94a3b8; }
+  .count {
+    font-size: 36px;
+  }
+
+  .cps {
+    color: #94a3b8;
+  }
 </style>
 </head>
 
@@ -82,7 +89,7 @@
   <button onclick="setTime(60)">60s</button>
   <br>
 
-  <input type="number" id="customTime" placeholder="Custom (seconds)" min="1">
+  <input type="number" id="customTime" placeholder="Custom time (seconds)" min="1">
   <button onclick="setCustom()">Set</button>
 
   <button class="reset-btn" onclick="resetTest()">Reset CPS</button>
@@ -95,13 +102,13 @@
 
 <div class="zones">
   <div class="zone" id="leftZone">
-    <h2>LEFT</h2>
+    <h2>LEFT CLICK</h2>
     <div class="count" id="leftCount">0</div>
     <div class="cps" id="leftCPS">0 CPS</div>
   </div>
 
   <div class="zone" id="rightZone">
-    <h2>RIGHT</h2>
+    <h2>RIGHT CLICK</h2>
     <div class="count" id="rightCount">0</div>
     <div class="cps" id="rightCPS">0 CPS</div>
   </div>
@@ -115,6 +122,14 @@ let timer = null;
 
 let left = 0;
 let right = 0;
+
+const leftZone = document.getElementById("leftZone");
+const rightZone = document.getElementById("rightZone");
+
+const leftCount = document.getElementById("leftCount");
+const rightCount = document.getElementById("rightCount");
+const leftCPS = document.getElementById("leftCPS");
+const rightCPS = document.getElementById("rightCPS");
 
 function setTime(t) {
   if (running) return;
@@ -144,6 +159,7 @@ function startTest() {
     timeLeft--;
     document.getElementById("timeLeft").textContent = timeLeft;
     updateCPS();
+
     if (timeLeft <= 0) endTest();
   }, 1000);
 }
@@ -176,23 +192,25 @@ function updateCPS() {
   rightCPS.textContent = elapsed > 0 ? (right / elapsed).toFixed(2) + " CPS" : "0 CPS";
 }
 
-/* LEFT CLICK ZONE */
-leftZone.addEventListener("pointerdown", (e) => {
+/* LEFT ZONE → ONLY LEFT CLICK */
+leftZone.addEventListener("mousedown", (e) => {
+  if (e.button !== 0) return;
   e.preventDefault();
   if (!running) startTest();
   left++;
   updateUI();
 });
 
-/* RIGHT CLICK ZONE */
-rightZone.addEventListener("pointerdown", (e) => {
+/* RIGHT ZONE → ONLY RIGHT CLICK */
+rightZone.addEventListener("mousedown", (e) => {
+  if (e.button !== 2) return;
   e.preventDefault();
   if (!running) startTest();
   right++;
   updateUI();
 });
 
-/* BLOCK RIGHT CLICK MENU ONLY ON ZONES */
+/* BLOCK RIGHT-CLICK MENU ONLY INSIDE ZONES */
 [leftZone, rightZone].forEach(zone => {
   zone.addEventListener("contextmenu", e => e.preventDefault());
 });
