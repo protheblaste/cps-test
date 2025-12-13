@@ -16,7 +16,9 @@
 
   h1 { margin-top: 20px; }
 
-  .controls { margin: 15px 0; }
+  .controls {
+    margin: 15px 0;
+  }
 
   button, input {
     padding: 8px 12px;
@@ -37,9 +39,14 @@
     background: #f87171;
   }
 
-  input { width: 90px; }
+  input {
+    width: 110px;
+  }
 
-  .info { color: #94a3b8; }
+  .info {
+    color: #94a3b8;
+    margin-top: 5px;
+  }
 
   .zones {
     display: flex;
@@ -73,15 +80,16 @@
   <button onclick="setTime(10)">10s</button>
   <button onclick="setTime(30)">30s</button>
   <button onclick="setTime(60)">60s</button>
+  <br>
 
-  <input type="number" id="customTime" placeholder="Custom (s)" min="1">
+  <input type="number" id="customTime" placeholder="Custom (seconds)" min="1">
   <button onclick="setCustom()">Set</button>
 
   <button class="reset-btn" onclick="resetTest()">Reset CPS</button>
 </div>
 
 <div class="info">
-  Time Selected: <span id="selTime">5</span>s |
+  ⏱ Time Selected: <span id="selTime">5</span> seconds |
   Time Left: <span id="timeLeft">--</span>s
 </div>
 
@@ -168,6 +176,7 @@ function updateCPS() {
   rightCPS.textContent = elapsed > 0 ? (right / elapsed).toFixed(2) + " CPS" : "0 CPS";
 }
 
+/* LEFT CLICK ZONE */
 leftZone.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   if (!running) startTest();
@@ -175,6 +184,7 @@ leftZone.addEventListener("pointerdown", (e) => {
   updateUI();
 });
 
+/* RIGHT CLICK ZONE */
 rightZone.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   if (!running) startTest();
@@ -182,7 +192,7 @@ rightZone.addEventListener("pointerdown", (e) => {
   updateUI();
 });
 
-/* ✅ BLOCK RIGHT CLICK ONLY INSIDE ZONES */
+/* BLOCK RIGHT CLICK MENU ONLY ON ZONES */
 [leftZone, rightZone].forEach(zone => {
   zone.addEventListener("contextmenu", e => e.preventDefault());
 });
