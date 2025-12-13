@@ -10,8 +10,9 @@
       margin: 0;
       background: #0f172a;
       color: #e5e7eb;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial, sans-serif;
       text-align: center;
+      user-select: none;
     }
 
     h1 { margin-top: 20px; }
@@ -25,7 +26,6 @@
       margin: 4px;
       border-radius: 8px;
       border: none;
-      cursor: pointer;
       font-size: 14px;
     }
 
@@ -33,10 +33,16 @@
       background: #38bdf8;
       color: #020617;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    .reset-btn {
+      background: #f87171;
+      color: #020617;
     }
 
     input {
-      width: 80px;
+      width: 90px;
     }
 
     .zones {
@@ -53,10 +59,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      user-select: none;
     }
-
-    .zone h2 { margin: 0; }
 
     .count {
       font-size: 36px;
@@ -84,8 +87,9 @@
   <button onclick="setTime(10)">10s</button>
   <button onclick="setTime(30)">30s</button>
   <button onclick="setTime(60)">60s</button>
-  <input type="number" id="customTime" placeholder="sec">
+  <input type="number" id="customTime" placeholder="Custom (s)" min="1">
   <button onclick="setCustom()">Set</button>
+  <button class="reset-btn" onclick="resetTest()">Reset CPS</button>
 </div>
 
 <div class="info">
@@ -120,13 +124,15 @@
   const rightZone = document.getElementById("rightZone");
 
   function setTime(t) {
+    if (running) return;
     duration = t;
     document.getElementById("selTime").textContent = t;
   }
 
   function setCustom() {
+    if (running) return;
     const v = Number(document.getElementById("customTime").value);
-    if (v > 0) {
+    if (v >= 1) {
       duration = v;
       document.getElementById("selTime").textContent = v;
     }
@@ -138,6 +144,7 @@
     left = 0;
     right = 0;
     updateUI();
+    updateCPS();
 
     document.getElementById("timeLeft").textContent = timeLeft;
 
@@ -154,9 +161,18 @@
     clearInterval(timer);
     running = false;
     updateCPS();
-    alert(
-      "Your CPS: " + ((left + right) / duration).toFixed(2)
-    );
+    alert("Your CPS: " + ((left + right) / duration).toFixed(2));
+  }
+
+  function resetTest() {
+    clearInterval(timer);
+    running = false;
+    left = 0;
+    right = 0;
+    timeLeft = 0;
+    document.getElementById("timeLeft").textContent = "--";
+    updateUI();
+    updateCPS();
   }
 
   function updateUI() {
@@ -175,22 +191,18 @@
   leftZone.addEventListener("pointerdown", (e) => {
     e.preventDefault();
     if (!running) startTest();
-    if (running) {
-      left++;
-      updateUI();
-    }
+    left++;
+    updateUI();
   });
 
   rightZone.addEventListener("pointerdown", (e) => {
     e.preventDefault();
     if (!running) startTest();
-    if (running) {
-      right++;
-      updateUI();
-    }
+    right++;
+    updateUI();
   });
 
-  // 🔥 FULL RIGHT-CLICK BLOCK (FINAL FIX)
+  // 🔥 HARD BLOCK RIGHT CLICK (NO MENU)
   document.addEventListener("mousedown", (e) => {
     e.preventDefault();
   });
