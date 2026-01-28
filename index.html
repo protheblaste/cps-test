@@ -12,6 +12,11 @@
     color: #e5e7eb;
     font-family: Arial, sans-serif;
     text-align: center;
+    /* Ensure content takes full height if needed */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   h1 { margin-top: 20px; }
@@ -45,6 +50,8 @@
   .zones {
     display: flex;
     height: 260px;
+    width: 90%; /* meaningful width for the zones */
+    max-width: 800px;
     margin: 20px;
     gap: 10px;
   }
@@ -61,6 +68,15 @@
 
   .count { font-size: 36px; }
   .cps { color: #94a3b8; }
+
+  /* New Footer Style */
+  .footer {
+    margin-top: auto; /* Pushes footer to bottom if flex is used, or just spacing */
+    margin-bottom: 20px;
+    color: #94a3b8;
+    font-size: 14px;
+    padding-top: 20px;
+  }
 </style>
 </head>
 
@@ -83,7 +99,7 @@
 </div>
 
 <div class="info">
-  ⏱ Time Selected: <span id="selTime">5</span> seconds |
+  ⏱ Time Selected: <span id="selTime">5</span> seconds | 
   Time Left: <span id="timeLeft">--</span>s
 </div>
 
@@ -100,6 +116,8 @@
     <div class="cps" id="rightCPS">0 CPS</div>
   </div>
 </div>
+
+<div class="footer">Made by protheblaste</div>
 
 <script>
 let duration = 5;
