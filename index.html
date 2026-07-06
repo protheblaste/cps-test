@@ -12,7 +12,7 @@
     color: #e5e7eb;
     font-family: Arial, sans-serif;
     text-align: center;
-    /* Ensure content takes full height if needed */
+   
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -50,7 +50,7 @@
   .zones {
     display: flex;
     height: 260px;
-    width: 90%; /* meaningful width for the zones */
+    width: 90%; 
     max-width: 800px;
     margin: 20px;
     gap: 10px;
@@ -69,9 +69,9 @@
   .count { font-size: 36px; }
   .cps { color: #94a3b8; }
 
-  /* New Footer Style */
+
   .footer {
-    margin-top: auto; /* Pushes footer to bottom if flex is used, or just spacing */
+    margin-top: auto;
     margin-bottom: 20px;
     color: #94a3b8;
     font-size: 14px;
@@ -99,7 +99,7 @@
 </div>
 
 <div class="info">
-  ⏱ Time Selected: <span id="selTime">5</span> seconds | 
+  Time Selected: <span id="selTime">5</span> seconds | 
   Time Left: <span id="timeLeft">--</span>s
 </div>
 
@@ -117,7 +117,6 @@
   </div>
 </div>
 
-<div class="footer">Made by protheblaste</div>
 
 <script>
 let duration = 5;
@@ -209,7 +208,7 @@ function updateCPS() {
 /* FINAL CLICK LOCK — NO CROSS CLICK POSSIBLE */
 leftZone.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "mouse") return;
-  if (e.buttons !== 1) return; // ONLY LEFT BUTTON
+  if (e.buttons !== 1) return; 
   e.preventDefault();
   if (!running) startTest();
   left++;
@@ -218,14 +217,13 @@ leftZone.addEventListener("pointerdown", (e) => {
 
 rightZone.addEventListener("pointerdown", (e) => {
   if (e.pointerType !== "mouse") return;
-  if (e.buttons !== 2) return; // ONLY RIGHT BUTTON
+  if (e.buttons !== 2) return; 
   e.preventDefault();
   if (!running) startTest();
   right++;
   updateUI();
 });
 
-/* BLOCK CONTEXT MENU INSIDE ZONES */
 [leftZone, rightZone].forEach(zone => {
   zone.addEventListener("contextmenu", e => e.preventDefault());
 });
